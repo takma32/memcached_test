@@ -51,5 +51,39 @@ class User extends Model{
 			}
 		}
 	}
+	public function update($data, $where_data){
+		// TODO プロパティにセットされた値を保存するようにする
+		if(is_array($data)){
+			$db = DB::getInstance();
+			foreach($data as $key => $val){
+				$_update_data[] = vsprintf(" `%s`='%s' ", array(
+					$db->real_escape_string($key),
+					$db->real_escape_string($val),
+				));
+			}
+			foreach($where_data as $key => $val){
+				$_where_column[] = vsprintf(" `%s`='%s' ", array(
+					$key,
+					$val,
+				));
+			}
+			$query	= vsprintf("UPDATE %s SET %s WHERE %s", array(
+				$this->_table,
+				implode(',', $_update_data),
+				implode(' AND ', $_where_column),
+			));
+			var_dump($query);
+			$m = mem::get();
+			$m->delete('userdata:' . $where_data['user_id']);
+
+			$db->query($query);
+			if($db->affected_rows>0){
+				$this->user_id = $db->insert_id;
+				return true;
+			}else{
+				return false;
+			}
+		}
+	}
 }
 
