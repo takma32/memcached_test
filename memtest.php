@@ -1,19 +1,15 @@
 <?php
+/**
+ * ユーザー情報読み込みテスト
+ */
 $time_start = microtime(true);
 
 require './core/bootstrap.php';
 
-try{
-	$u = new User();
-}catch(Exception $e){
-	echo $e->getMessage();
-}
-
-for($i=0; $i<10; $i++){
-	$user_array = $u->getUser($i);
+for($i=0; $i<100; $i++){
+	$user = User::getUser($i);
 	var_dump(
-		$user_array,
-		$user_array[0]['user_name']
+		$user->user_name
 	);
 }
 
