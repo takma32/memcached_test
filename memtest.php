@@ -4,13 +4,15 @@
  */
 $time_start = microtime(true);
 
-require './core/bootstrap.php';
+require './config/bootstrap.php';
 
 for($i=0; $i<100; $i++){
 	$user = User::getUser($i);
-	var_dump(
-		$user->user_name
-	);
+	if(isset($user->user_name)){
+		var_dump(
+			$user->user_name
+		);
+	}
 }
 
 $time_end = microtime(true);

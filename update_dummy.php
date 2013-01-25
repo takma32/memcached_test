@@ -4,16 +4,13 @@
  */
 $time_start = microtime(true);
 
-require './core/bootstrap.php';
+require './config/bootstrap.php';
 
 $user = new User();
 for($i=1; $i<=100; $i++){
-	$user->update(array(
-		'user_name' => 'test' . $i,
-		'registdate' => date('Y-m-d H:i:s'),
-	), array(
-		'user_id' => $i,
-	));
+	$user->user_name  = 'test' . $i;
+	$user->user_id  = $i;
+	$user->update();
 	var_dump($user);
 }
 $m = mem::get();

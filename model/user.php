@@ -5,20 +5,17 @@ class User extends Model{
 		$m = mem::get();
 		$_ret_val = $m->get('userdata:' . $user_id);
 		if($_ret_val===false){
-			$db = DB::getInstance();
-			$query	= vsprintf("SELECT SQL_NO_CACHE * FROM user_t WHERE user_id = '%s' ", array(
-				$db->real_escape_string($user_id),
+			$db = DB::conn();
+			$row = $db->row("SELECT SQL_NO_CACHE * FROM user_t WHERE user_id = ? ", array(
+				$user_id,
 			));
-			$result = $db->query($query);
-			if($result->num_rows>0){
-				$_ret_val = new self($result->fetch_assoc());
-			}
+			$_ret_val = new self($row);
 			$m->set('userdata:' . $user_id, $_ret_val, time()+60);
 		}
 		return $_ret_val;
 	}
 
-	public function __construct($data){
+	public function __construct($data=''){
 		if(is_array($data)){
 			foreach($data as $key => $val){
 				$this->$key = $val;
@@ -28,62 +25,22 @@ class User extends Model{
 
 	private $_table = 'user_t';
 
-	public function save($data){
-		// TODO プロパティにセットされた値を保存するようにする
-		if(is_array($data)){
-			foreach($data as $key => $val){
-				$_columns[] = '`' . $key . '`';
-				$_values[] = "'" . $val . "'";
-			}
-			$query	= vsprintf("INSERT INTO %s (%s) VALUES (%s) ", array(
-				$this->_table,
-				implode(',', $_columns),
-				implode(',', $_values),
-			));
-			var_dump($query);
-			$db = DB::getInstance();
-			$db->query($query);
-			if($db->affected_rows>0){
-				$this->user_id = $db->insert_id;
-				return true;
-			}else{
-				return false;
-			}
-		}
+	public function save(){
+		$db = DB::conn();
+		$db->query("INSERT INTO user_t (`user_name`, `registdate`) VALUES(?, ?) ", array(
+			$this->user_name,
+			date('Y-m-d H:i:s'),
+		));
+		$this->user_id = $db->lastInsertId();
 	}
-	public function update($data, $where_data){
-		// TODO プロパティにセットされた値を保存するようにする
-		if(is_array($data)){
-			$db = DB::getInstance();
-			foreach($data as $key => $val){
-				$_update_data[] = vsprintf(" `%s`='%s' ", array(
-					$db->real_escape_string($key),
-					$db->real_escape_string($val),
-				));
-			}
-			foreach($where_data as $key => $val){
-				$_where_column[] = vsprintf(" `%s`='%s' ", array(
-					$key,
-					$val,
-				));
-			}
-			$query	= vsprintf("UPDATE %s SET %s WHERE %s", array(
-				$this->_table,
-				implode(',', $_update_data),
-				implode(' AND ', $_where_column),
-			));
-			var_dump($query);
-			$m = mem::get();
-			$m->delete('userdata:' . $where_data['user_id']);
+	public function update(){
+		$db = DB::conn();
+		$db->query("UPDATE user_t SET `user_name` = ? , `registdate` = ? WHERE user_id = ? ", array(
+			$this->user_name,
+			date('Y-m-d H:i:s'),
+			$this->user_id,
+		));
 
-			$db->query($query);
-			if($db->affected_rows>0){
-				$this->user_id = $db->insert_id;
-				return true;
-			}else{
-				return false;
-			}
-		}
 	}
 }
 
