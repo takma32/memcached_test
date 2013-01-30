@@ -6,7 +6,7 @@ $time_start = microtime(true);
 
 require './config/bootstrap.php';
 
-for($i=0; $i<100; $i++){
+for($i=1; $i<=100; $i++){
 	$user = User::getUser($i);
 	if(isset($user->user_name)){
 		var_dump(

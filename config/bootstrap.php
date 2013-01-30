@@ -11,10 +11,10 @@ require BASE_DIR . 'vendor/SimpleDBI/SimpleDBI.php';
 // require config
 require BASE_DIR . 'config/core.php';
 require BASE_DIR . 'config/database.php';
+require BASE_DIR . 'config/db_mem.php';
 
 // Lib
 require BASE_DIR . 'lib/memcached.php';
-require BASE_DIR . 'lib/db.php';
 
 // require model
 require BASE_DIR . 'model/user.php';
